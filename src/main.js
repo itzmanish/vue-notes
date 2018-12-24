@@ -1,12 +1,13 @@
 import Vue from "vue";
 import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import AtComponents from "at-ui";
+import "at-ui-style"; // Import CSS
 
-Vue.config.productionTip = false;
+// import 'at-ui-style/src/index.scss'      // Or import the unbuilt version of SCSS
+
+Vue.use(AtComponents);
 
 new Vue({
-  router,
-  store,
+  el: "#app",
   render: h => h(App)
-}).$mount("#app");
+});

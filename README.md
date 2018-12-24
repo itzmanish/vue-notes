@@ -1,4 +1,4 @@
-# second-project
+# Vue-todo app
 
 ## Project setup
 ```

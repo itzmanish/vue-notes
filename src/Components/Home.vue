@@ -6,13 +6,21 @@
           <h1 class="text-center">A Simple note keeping app.</h1>
         </div>
       </div>
+
       <div class="row at-row flex-around">
-        <at-input class="input-box" v-model="inputTitle" placeholder="Please input todos"></at-input>
+        <input
+          type="text"
+          class="at-input__original input-box"
+          v-model="inputTitle"
+          @keyup.enter="addNotes"
+          placeholder="Please input tasks and hit ENTER to save"
+        >
         <at-button class="ml-n3" type="primary" @click="addNotes">Add</at-button>
       </div>
       <div class="todos">
         <div v-for="(todo, index) in noteslist" :key="index">
           <at-checkbox class="list-todos" v-model="todo.finished">{{ todo.task }}</at-checkbox>
+          <at-button class="align-right" @click="removeNotes(index)" type="primary">Delete</at-button>
         </div>
       </div>
     </div>
@@ -34,13 +42,15 @@ export default {
     };
   },
   methods: {
+    test(e) {
+      console.log(e.target.value);
+    },
     addNotes() {
       if (this.validate(this.inputTitle)) {
         this.notes.task = this.inputTitle;
         this.notes.finished = this.finish;
         this.noteslist.push(this.notes);
         (this.notes = {}), (this.inputTitle = ""), (this.errorStatus = false);
-        console.log(this.noteslist);
       } else {
         (this.errorStatus = true),
           (this.errorMessage = `Note title can't be blank`);
@@ -62,6 +72,9 @@ export default {
 
 
 <style scoped>
+.align-right {
+  float: right;
+}
 .list-todos {
   text-align: center;
   margin: 10px auto;

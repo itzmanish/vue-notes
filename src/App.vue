@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-    <CompHeader/>
-    <CompHome :noteslist="noteslist"/>
-    <CompFooter/>
+    <CompHeader />
+    <CompHome />
+    <CompFooter />
   </div>
 </template>
 
@@ -10,14 +10,7 @@
 import CompHeader from "./Components/Header_footer/Header.vue";
 import CompFooter from "./Components/Header_footer/Footer.vue";
 import CompHome from "./Components/Home.vue";
-
 export default {
-  data() {
-    return {
-      name: "Manish",
-      noteslist: []
-    };
-  },
   components: {
     CompHeader,
     CompFooter,

@@ -6,7 +6,6 @@
           <h1 class="text-center">A Simple note keeping app.</h1>
         </div>
       </div>
-
       <div class="row at-row flex-around">
         <input
           type="text"
@@ -15,12 +14,31 @@
           @keyup.enter="addNotes"
           placeholder="Please input tasks and hit ENTER to save"
         >
-        <at-button class="ml-n3" type="primary" @click="addNotes">Add</at-button>
+        <at-button
+          class="ml-n3"
+          type="primary"
+          @click="addNotes"
+        >Add</at-button>
       </div>
       <div class="todos">
-        <div v-for="(todo, index) in noteslist" :key="index">
-          <at-checkbox class="list-todos" v-model="todo.finished">{{ todo.task }}</at-checkbox>
-          <at-button class="align-right" @click="removeNotes(index)" type="primary">Delete</at-button>
+        <div
+          v-for="(todo, index) in notes"
+          :key="index"
+        >
+          <at-checkbox
+            class="list-todos"
+            v-model="todo.finished"
+          >
+            <span
+              :class="{ 'strikethrough': todo.finished}"
+              @click="updateTodo(todo)"
+            >{{ todo.title }}</span>
+          </at-checkbox>
+          <at-button
+            class="align-right"
+            @click.prevent="removeTask(todo)"
+            type="primary"
+          >Delete</at-button>
         </div>
       </div>
     </div>
@@ -28,32 +46,47 @@
 </template>
 
 <script>
+import TaskService from "@/services/TaskService";
+
 export default {
-  props: {
-    noteslist: Array
-  },
   data() {
     return {
       inputTitle: "",
       errorStatus: false,
       errorMessage: "",
-      finish: false,
-      notes: {}
+      notes: [],
+      classStrike: ""
     };
   },
+  mounted() {
+    this.getTasks();
+  },
   methods: {
-    test(e) {
-      console.log(e.target.value);
+    async getTasks() {
+      const response = await TaskService.fetchTasks();
+      this.notes = response.data;
     },
-    addNotes() {
+    async addNotes() {
       if (this.validate(this.inputTitle)) {
-        this.notes.task = this.inputTitle;
-        this.notes.finished = this.finish;
-        this.noteslist.push(this.notes);
-        (this.notes = {}), (this.inputTitle = ""), (this.errorStatus = false);
+        let response = await TaskService.addTask({
+          title: this.inputTitle,
+          finished: this.finish
+        });
+        if (response.status != 200) {
+          this.errorMessage = response.data;
+          this.handleClick("error", this.errorMessage);
+          this.error();
+          this.getTasks();
+        } else {
+          this.inputTitle = "";
+          this.start();
+          this.getTasks();
+          this.finish();
+        }
       } else {
-        (this.errorStatus = true),
-          (this.errorMessage = `Note title can't be blank`);
+        this.errorStatus = true;
+        this.errorMessage = `Note title can't be blank`;
+        this.error();
       }
     },
     validate(value) {
@@ -63,8 +96,60 @@ export default {
         return false;
       }
     },
-    removeNotes(index) {
-      this.noteslist.splice(index, 1);
+    async updateTodo(task) {
+      let response = await TaskService.updateTask({
+        id: task._id,
+        title: task.title,
+        finished: !task.finished
+      });
+      if (response.status != 200) {
+        this.errorMessage = response.data;
+        this.handleClick("error", this.errorMessage);
+        this.error();
+        this.getTasks();
+      } else {
+        this.start();
+        this.getTasks();
+        this.finish();
+      }
+    },
+    async removeTask(task) {
+      let response = await TaskService.deleteTask({
+        id: task._id
+      });
+      if (response.status != 200) {
+        this.errorMessage = response.data;
+        this.handleClick("error", this.errorMessage);
+        this.error();
+        this.getTasks();
+      } else {
+        this.start();
+        this.getTasks();
+        this.finish();
+      }
+    },
+    start() {
+      this.$Loading.start();
+    },
+    finish() {
+      this.$Loading.finish();
+    },
+    error() {
+      this.$Loading.error();
+    },
+    update() {
+      this.$Loading.update(50);
+    },
+    handleClick(type, msg) {
+      if (type === "info") {
+        this.$Message.info(msg);
+      } else if (type === "success") {
+        this.$Message.success(msg);
+      } else if (type === "warning") {
+        this.$Message.warning(msg);
+      } else if (type === "error") {
+        this.$Message.error(msg);
+      }
     }
   }
 };
@@ -72,6 +157,9 @@ export default {
 
 
 <style scoped>
+.strikethrough {
+  text-decoration: line-through;
+}
 .align-right {
   float: right;
 }

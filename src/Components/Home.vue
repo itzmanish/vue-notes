@@ -3,7 +3,7 @@
     <div class="container">
       <div class="markdown">
         <div class="title">
-          <h1 class="text-center">A Simple note keeping app.</h1>
+          <h1 class="text-center">A Simple Todo app.</h1>
         </div>
       </div>
       <div class="row at-row flex-around">

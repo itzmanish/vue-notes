@@ -4,14 +4,20 @@
       <div class="nav-container">
         <div class="nav-left">
           <div class="logo">
-            <a href="/" class="router-link-active">
-              <span>Notes</span>
+            <a
+              href="/"
+              class="router-link-active"
+            >
+              <span>TooDoo</span>
             </a>
           </div>
           <i class="icon icon-menu nav-icon"></i>
         </div>
         <div class="nav-right">
-          <at-button class="btn" type="primary">Login</at-button>
+          <at-button
+            class="btn"
+            type="primary"
+          >Login</at-button>
         </div>
       </div>
     </header>
